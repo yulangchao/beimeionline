@@ -73,6 +73,14 @@ const routers = [{
             resolve(require('./views/login.vue'));
         });
     }
+}, {
+    path: '/register',
+    name: 'register',
+    component(resolve) {
+        require.ensure(['./views/register.vue'], () => {
+            resolve(require('./views/register.vue'));
+        });
+    }
 }];
 
 export default routers;

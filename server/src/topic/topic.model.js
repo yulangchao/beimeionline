@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var TopicSchema = new Schema({
+  id: String,
   author: Object,
   author_id: String,
   content: String,
@@ -23,7 +24,9 @@ var TopicSchema = new Schema({
     type: Number,
     default: 0
   },
-  replies: []
+  hasImage: Boolean,
+  replies: [],
+  city: String
 },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

@@ -1,6 +1,8 @@
 'use strict';
 
 var Topic = require('./topic.model');
+var Img = require('../img/img.model');
+var Reply = require('../reply/reply.model');
 var jwt = require('jsonwebtoken');
 /**
  * GET /topics
@@ -18,7 +20,7 @@ exports.find = function (req, res, next) {
       }
       return res.status(200).json(topics);
     }).skip((req.query.page - 1) * 20).limit(Number(req.query.limit)).
-      sort({ top: -1 ,created_at: -1 });
+      sort({ top: -1, created_at: -1 });
   } else if (req.query.tab == "good") {
     Topic.find({
       "good": true
@@ -28,7 +30,7 @@ exports.find = function (req, res, next) {
       }
       return res.status(200).json(topics);
     }).skip((req.query.page - 1) * 20).limit(Number(req.query.limit)).
-      sort({ top: -1 ,created_at: -1 });
+      sort({ top: -1, created_at: -1 });
   } else {
     Topic.find({
       "tab": req.query.tab
@@ -38,7 +40,7 @@ exports.find = function (req, res, next) {
       }
       return res.status(200).json(topics);
     }).skip((req.query.page - 1) * 20).limit(Number(req.query.limit)).
-      sort({ top: -1 ,created_at: -1 });
+      sort({ top: -1, created_at: -1 });
   }
 };
 
@@ -50,6 +52,7 @@ exports.find = function (req, res, next) {
  *
  */
 exports.get = function (req, res, next) {
+
   Topic.findById(req.params.id, function (err, topic) {
     if (err) {
       return next(err);
@@ -64,8 +67,31 @@ exports.get = function (req, res, next) {
       if (err) {
         return next(err);
       }
+
+
+      Topic.aggregate([
+        { "$match": { id: req.params.id } },
+        {
+          "$lookup": {
+            "from": "Img",
+            "localField": "id",
+            "foreignField": "topicId",
+            "as": "imgs"
+          }
+        }
+      ], function (err, topic) {
+        console.log(topic);
+        if (err) {
+          return next(err);
+        }
+        if (!topic) {
+          return res.status(404).send('Not Found');
+        }
+        return res.status(200).json(topic[0]);
+      });
+
+
     });
-    return res.status(200).json(topic);
   });
 };
 
@@ -77,7 +103,6 @@ exports.get = function (req, res, next) {
  *
  */
 exports.post = function (req, res, next) {
-  console.log(req.body);
   var user = jwt.decode(req.body.accesstoken);
   req.body.author = {
     loginname: user.fullName,
@@ -88,6 +113,30 @@ exports.post = function (req, res, next) {
     if (err) {
       return next(err);
     }
+
+    if (req.body.imgs) {
+      topic.hasImage = true;
+      var img_data = {
+        topicId: topic._id,
+        imgs: req.body.imgs
+      }
+      Img.create(img_data, function (err, imgs) {
+        if (err) {
+          return next(err);
+        }
+      });
+    } else{
+      topic.hasImage = false;
+    }
+
+    topic.id = topic._id;
+
+    topic.save(function (err) {
+      if (err) {
+        return next(err);
+      }
+    });
+
     return res.status(201).json(topic);
   });
 };
@@ -133,11 +182,14 @@ exports.reply = function (req, res, next) {
     var user = jwt.decode(req.body.accesstoken);
     var reply = {
       author: {
-        loginname: user.fullName,
+        loginname: user.fullName, 
         avatar_url: user.avatar_url
       },
       content: req.body.content,
-      created_at: new Date()
+      created_at: new Date(),
+      articleId: topic._id,
+      articleAuthorId: topic.author_id,
+      read: false
     }
 
     topic.replies.push(reply);

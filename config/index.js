@@ -14,8 +14,22 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
-    port: 8081,
+    port: 8888,
     proxyTable: {
+      '/api': {
+        target: 'http://localhost:3002',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': 'api'
+        }
+      },      
+      '/auth': {
+        target: 'http://localhost:3002',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/auth': 'auth'
+        }
+      }
     }
   }
 }

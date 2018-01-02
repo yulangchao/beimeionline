@@ -51,10 +51,10 @@
                                         发布于:{{item.created_at | getLastTimeStr(true)}}</span>
                                 </span>
                                 <span class="cr">
-                                    <span class="iconfont icon"
+                                    <!-- <span class="iconfont icon"
                                         :class="{'uped':isUps(false)}"
                                         @click="upReply(item)">&#xe608;</span>
-                                    {{10}}
+                                    {{10}} -->
                                     <span class="iconfont icon" @click="addReply(item.id)">&#xe609;</span>
                                 </span>
                             </div>
@@ -116,7 +116,7 @@
             this.topicId = this.$route.params.id;
 
             // 加载主题数据
-            $.get('http://localhost:3002/api/topics/' + this.topicId, (d) => {
+            $.get('/api/topics/' + this.topicId, (d) => {
                 if (d) {
                     this.topic = d;
                 } else {

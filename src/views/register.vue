@@ -1,34 +1,20 @@
 <template>
-    <div>
-        <nv-head page-type="主题"
-            :show-menu="false"
-            :fix-head="true"></nv-head>
-        <div class="add-container">
-            <div class="line">选择分类：
-                <select class="add-tab" v-model="topic.tab">
-                    <option value="share">分享</option>
-                    <option value="ask">问答</option>
-                    <option value="job">招聘</option>
-                </select>
-                <a class="add-btn" @click="addTopic">发布</a>
+    <div class="login-page">
+        <nv-head page-type="注册">
+        </nv-head>
+        <section class="page-body">
+            <div class="label">
+                <input class="txt" type="text" placeholder="Name" v-model="name" maxlength="36" required>
             </div>
-
-            <div class="line">
-                <input class="add-title" v-model="topic.title"
-                        type="text" :class="{'err':err=='title'}"
-                        placeholder="标题，字数10字以上" max-length="100"/>
+            <div class="label">
+                <input class="txt" type="email" placeholder="Email" v-model="email" maxlength="36" required>
             </div>
-            <div class="line">选择城市：
-                <select class="add-tab" v-model="topic.city">
-                    <option value="Vancouver">温哥华</option>
-                    <option value="Richmond">列治文</option>
-                    <option value="Burnaby">本拿比</option>
-                </select>
+            <div class="label">
+                <input class="txt" type="password" placeholder="Passwrod" v-model="password" maxlength="36" required>
             </div>
-            <textarea v-model="topic.content" rows="10" class="add-content"
-                :class="{'err':err=='content'}"
-                placeholder='回复支持Markdown语法,请注意标记代码'>
-            </textarea>
+            <div class="label">
+                <input class="txt" type="password" placeholder="Confirm Passwrod" v-model="confirmpassword" maxlength="36" required >
+            </div>
             <div class="vue-uploader">
                 <div class="file-list">
                     <section v-for="(file, index) of files" class="file-item draggable-item">
@@ -36,34 +22,35 @@
                         <p class="file-name">{{file.name}}</p>
                         <span class="file-remove" @click="remove(index)">+</span>
                     </section>
-                    <section v-if="status == 'ready'" class="file-item">
+                    <section v-if="files.length==0" class="file-item">
                         <div @click="add" class="add">
                             <span>+</span>
                         </div>
                     </section>
                 </div>
 
-                <input type="file" accept="image/*" @change="fileChanged" ref="file" multiple="multiple">
+                <input type="file" id="imgs" accept="image/*" @change="fileChanged" ref="file">
             </div>
-        </div>
+            <div class="label">
+                <a class="button" type="submit" @click="register">注册</a>
+            </div>
+        </section>
     </div>
 </template>
 
 <script>
 import $ from "webpack-zepto";
 import nvHead from "../components/header.vue";
-import { mapGetters } from "vuex";
+import jwt from "jsonwebtoken";
 
 export default {
   data() {
     return {
-      topic: {
-        tab: "share",
-        title: "",
-        content: "",
-        city: "Vancouver"
-      },
-      err: "",
+      name: "",
+      token: "",
+      password: "",
+      email: "",
+      confirmpassword: "",
       status: "ready",
       files: [],
       point: {},
@@ -77,29 +64,14 @@ export default {
            this.mobile = (window.innerWidth <= 992);
         });
   },
-  computed: {
-    ...mapGetters({
-      userInfo: "getUserInfo"
-    })
-  },
   methods: {
     add() {
       if (this.mobile) {
-        this.$refs.file.click();
+        $("#imgs").click();
         this.$refs.file.click();
       } else {
-        this.$refs.file.click();
+        $("#imgs").click();
       }
-    },
-    submit() {
-      if (this.files.length === 0) {
-        console.warn("no file!");
-        return;
-      }
-      const formData = new FormData();
-      this.files.forEach(item => {
-        formData.append(item.name, item.file);
-      });
     },
     finished() {
       this.files = [];
@@ -148,46 +120,44 @@ export default {
         console.warn("upload progress unable to compute");
       }
     },
-    addTopic() {
-      let imgs = [];
-      this.files.forEach(item => {
-        imgs.push(item.src);
-      });
-      console.log(this.userInfo);
-      let title = $.trim(this.topic.title);
-      let contents = $.trim(this.topic.content);
-
-      if (!title || title.length < 10) {
-        this.err = "title";
-        return false;
+    ValidateEmail(email) {
+      if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+        return true;
       }
-      if (!contents) {
-        this.err = "content";
-        return false;
+      return false;
+    },
+    register() {
+      if (!this.ValidateEmail(this.email)) {
+        this.$alert("Enter the correct email");
+        return;
       }
-
-      let postData = {
-        ...this.topic,
-        content: this.topic.content,
-        imgs: imgs,
-        accesstoken: this.userInfo.token
-      };
+      if (this.password.length < 8) {
+        this.$alert("Password should be grt than 7 digits");
+        return;
+      }
+      if (this.password != this.confirmpassword) {
+        this.$alert("Passwords are not matched");
+        return;
+      }
       $.ajax({
         type: "POST",
-        url: "/api/topics",
-        data: postData,
+        url: "/auth/register",
+        data: {
+          email: this.email,
+          password: this.password,
+          fullName: this.name,
+          avatar_url: this.files[0].src
+        },
         dataType: "json",
         success: res => {
-          if (res) {
-            this.$router.push({
-              name: "list"
-            });
-          }
+          this.$alert("Register done");
+          this.$router.push("login");
         },
         error: res => {
-          let error = JSON.parse(res.responseText);
-          this.$alert(error.error_msg);
-          return false;
+            this.$alert("not done");
+          var error = JSON.parse(res.responseText);
+          console.log(error);
+          this.$alert(error.message.message);
         }
       });
     }
@@ -197,52 +167,7 @@ export default {
   }
 };
 </script>
-
 <style lang="scss">
-.add-container {
-  margin-top: 50px;
-  background-color: #fff;
-  .line {
-    padding: 10px 15px;
-    border-bottom: solid 1px #d4d4d4;
-    .add-btn {
-      color: #fff;
-      background-color: #80bd01;
-      padding: 5px 15px;
-      border-radius: 5px;
-    }
-    .add-tab {
-      height: 27px;
-      display: inline-block;
-      width: calc(100% - 140px);
-      min-width: 50%;
-      font-size: 16px;
-      background: transparent;
-      :after {
-        content: "xe60e";
-      }
-    }
-    .add-title {
-      font-size: 16px;
-      border: none;
-      width: 100%;
-      background: transparent;
-      height: 25px;
-    }
-    .err {
-      border: solid 1px red;
-    }
-  }
-  .add-content {
-    margin: 15px 2%;
-    width: 96%;
-    border-color: #d4d4d4;
-    color: #000;
-  }
-  .err {
-    border: solid 1px red;
-  }
-}
 .vue-uploader {
   border: 1px solid #e5e5e5;
 }
@@ -341,5 +266,50 @@ export default {
 }
 .vue-uploader > input[type="file"] {
   display: none;
+}
+.page-body {
+  padding: 50px 15px;
+  min-height: 400px;
+  background-color: #fff;
+  .label {
+    display: inline-block;
+    width: 100%;
+    margin-top: 15px;
+    position: relative;
+    left: 0;
+    top: 0;
+    .txt {
+      padding: 12px 0;
+      border: none;
+      border-bottom: 1px solid #4fc08d;
+      background-color: transparent;
+      width: 100%;
+      font-size: 14px;
+      color: #313131;
+    }
+    .button {
+      display: inline-block;
+      width: 99%;
+      height: 42px;
+      line-height: 42px;
+      border-radius: 3px;
+      color: #fff;
+      font-size: 16px;
+      background-color: #4fc08d;
+      border: none;
+      border-bottom: 2px solid #3aa373;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .file {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 42px;
+      width: 48%;
+      outline: medium none;
+      opacity: 0;
+    }
+  }
 }
 </style>

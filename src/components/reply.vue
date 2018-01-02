@@ -57,7 +57,7 @@
                     }
                     $.ajax({
                         type: 'POST',
-                        url: `http://localhost:3002/api/topics/${this.topicId}/replies`,
+                        url: `/api/topics/${this.topicId}/replies`,
                         data: postData,
                         dataType: 'json',
                         success: (res) => {

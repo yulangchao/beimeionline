@@ -28,10 +28,10 @@
                                     /{{item.visit_count}}
                                 </span>
                             </p>
-                            <p>
-                                <time></time>
-                                <time>{{item.created_at | getLastTimeStr(true)}}</time>
-                            </p>
+                            <div>
+                                <span class="pic" v-if="item.hasImage">有图</span>
+                                <span style="float:right">{{item.created_at | getLastTimeStr(true)}}</span>
+                            </div>
                         </div>
                     </div>
                     </router-link>
@@ -41,7 +41,18 @@
         <nv-top></nv-top>
     </div>
 </template>
-
+<style lang="scss">
+    .pic{
+        color:white;
+        padding: 5px 6px;
+        font-size: 10px;
+        font-weight: 400;   
+        border-radius: 4px;
+        background-color: green;
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
 <script>
     import $ from 'webpack-zepto';
     import utils from '../libs/utils.js';
@@ -65,26 +76,35 @@
                     limit: 20,
                     tab: 'all',
                     mdrender: true,
-                    city: 'Vancouver'
+                    city: 'Richmond'
                 },
                 searchDataStr: ''
             };
         },
         mounted() {
-            this.geolocation();
-            if (this.$route.query && this.$route.query.tab) {
-                this.searchKey.tab = this.$route.query.tab;
-            }
+            // navigator.geolocation.getCurrentPosition((position) => {
+            //     this.currentLocation = {
+            //         lat: position.coords.latitude,
+            //         lng: position.coords.longitude
+            //     };
 
-            // 如果从详情返回并且之前存有对应的查询条件和参数
-            // 则直接渲染之前的数据
-            if (window.window.sessionStorage.searchKey && window.window.sessionStorage.tab === this.searchKey.tab) {
-                this.topics = JSON.parse(window.window.sessionStorage.topics);
-                this.searchKey = JSON.parse(window.window.sessionStorage.searchKey);
-                this.$nextTick(() => $(window).scrollTop(window.window.sessionStorage.scrollTop));
-            } else {
-                this.getTopics();
-            }
+            // }); 
+                if(1){
+                    this.searchKey.city = "Vancouver";
+                }
+                if (this.$route.query && this.$route.query.tab) {
+                    this.searchKey.tab = this.$route.query.tab;
+                }
+
+                // 如果从详情返回并且之前存有对应的查询条件和参数
+                // 则直接渲染之前的数据
+                if (window.window.sessionStorage.searchKey && window.window.sessionStorage.tab === this.searchKey.tab) {
+                    this.topics = JSON.parse(window.window.sessionStorage.topics);
+                    this.searchKey = JSON.parse(window.window.sessionStorage.searchKey);
+                    this.$nextTick(() => $(window).scrollTop(window.window.sessionStorage.scrollTop));
+                } else {
+                    this.getTopics();
+                }
             // 滚动加载
             $(window).on('scroll', utils.throttle(this.getScrollData, 300, 1000));
         },
@@ -116,17 +136,6 @@
             next();
         },
         methods: {
-            geolocation() {
-            navigator.geolocation.getCurrentPosition((position) => {
-                this.currentLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                if(1){
-                    this.searchKey.city = "Richmond";
-                }
-            }); 
-            },
             // 获取title文字
             getTitleStr(tab) {
                 let str = '';
@@ -156,8 +165,9 @@
             // 获取主题数据
             getTopics() {
                 let params = $.param(this.searchKey);
-                $.get('http://localhost:3002/api/topics?' + params, (d) => {
+                $.get('/api/topics?' + params, (d) => {
                     this.scroll = true;
+                    
                     if (d) {
                         d.forEach(this.mergeTopics);
                     }

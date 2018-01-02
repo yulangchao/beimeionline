@@ -12,6 +12,7 @@ var mongoose = require('mongoose');
 
 var routes = require('./src/routes');
 
+
 /**
  * MongoDB configurations
  */
@@ -57,10 +58,10 @@ connectWithRetry();
  * Express app configurations
  */
 var app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded(
+  {limit: '50mb', extended: true, parameterLimit: 1000000}
+));
 // Enable CORS
 app.use(cors());
 
@@ -69,7 +70,7 @@ app.use(routes);
 
 // Static files
 app.use('/', express.static(__dirname + '/../dist'));
-
+console.log(__dirname);
 // Once database open, start server
 mongoose.connection.once('open', function callback() {
   console.log('Connection with database succeeded.');

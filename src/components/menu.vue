@@ -9,6 +9,7 @@
             <router-link class="icon-zhaopin iconfont item" :to="{'name':'list',query:{tab:'job'}}">招聘</router-link>
             <router-link class="icon-xiaoxi iconfont item line" :to="{'name':'message'}">消息</router-link>
             <router-link class="icon-about iconfont item" :to="{'name':'about'}">关于</router-link>
+            <a class="icon-about iconfont item" @click="logout">登出</a>
         </section>
     </section>
 </template>
@@ -18,6 +19,13 @@
         props: ['showMenu', 'pageType', 'nickName', 'profileUrl'],
         components: {
             'userInfo': require('./user-info.vue')
+        },
+        methods:{
+            logout(){
+                window.window.sessionStorage.clear();
+                this.$store.dispatch('setUserInfo', null);
+                this.$router.push('login');
+            }
         }
     };
 </script>

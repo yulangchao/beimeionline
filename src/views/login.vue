@@ -4,14 +4,19 @@
         </nv-head>
         <section class="page-body">
             <div class="label">
-                <input class="txt" type="text" placeholder="Access Token" v-model="email" maxlength="36">
+                <input class="txt" type="text" placeholder="Email" v-model="email" maxlength="36">
             </div>
             <div class="label">
-                <input class="txt" type="text" placeholder="Access Token" v-model="password" maxlength="36">
+                <input class="txt" type="text" placeholder="Password" v-model="password" maxlength="36">
             </div>
             <div class="label">
                 <a class="button" @click="logon">登录</a>
             </div>
+            <router-link :to="{name:'register'}">
+            <div class="label">
+                <a class="button">注册</a>
+            </div>
+            </router-link>
         </section>
     </div>
 </template>
@@ -31,9 +36,10 @@
         },
         methods: {
             logon() {
+                alert(111);
                 $.ajax({
                     type: 'POST',
-                    url: 'http://localhost:3002/auth/sign_in',
+                    url: '/auth/sign_in',
                     data: {
                         email: this.email,
                         password: this.password
@@ -59,8 +65,10 @@
                         });
                     },
                     error: (res) => {
+                        alert(res.status);
                         var error = JSON.parse(res.responseText);
                         console.log(error);
+                        alert(error);
                         this.$alert(error.message);
                     }
                 });
