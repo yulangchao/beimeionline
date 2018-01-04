@@ -58,7 +58,7 @@ connectWithRetry();
  * Express app configurations
  */
 var app = express();
-app.use(history());
+
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded(
   {limit: '50mb', extended: true, parameterLimit: 1000000}
@@ -70,8 +70,10 @@ app.use(cors());
 app.use(routes);
 
 // Static files
+app.use(history());
 app.use('/', express.static(__dirname + '/../dist'));
 app.use('/static', express.static(__dirname + '/imgs/'));
+
 console.log(__dirname);
 // Once database open, start server
 mongoose.connection.once('open', function callback() {

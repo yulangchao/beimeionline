@@ -8,4 +8,4 @@ var ReplySchema = new Schema({
   imgs: [String]
 });
 
-module.exports = mongoose.model('Reply', ReplySchema);
+module.exports = mongoose.model('replies', ReplySchema);
