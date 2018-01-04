@@ -4,17 +4,19 @@ var mongoose = require('mongoose'),
   jwt = require('jsonwebtoken'),
   bcrypt = require('bcrypt'),
   User = require('./user.model');
+  var fs = require('fs');
 
 exports.register = function(req, res) {
   
 
   var base64Data = req.body.avatar_url.replace(/^data:image\/\w+;base64,/, "");
-  var path = __dirname + "/../../imgs/" + topic._id + "/" + i + ".png";
+  var path = __dirname + "/../../imgs/users/" + req.body.email + ".png";
 
   fs.writeFile(path, base64Data, 'base64', (err) => {
     console.log(err);
   });
-  
+
+  req.body.avatar_url = "/static/users/" + req.body.email + ".png";
   var newUser = new User(req.body);
   newUser.hash_password = bcrypt.hashSync(req.body.password, 10);
   newUser.save(function(err, user) {

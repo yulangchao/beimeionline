@@ -1,13 +1,14 @@
 {
-  "name": "vue-cnode",
+  "name": "BeimeiOnline",
   "version": "2.0.0",
-  "description": "用Vue.js 重写Cnodejs社区",
-  "author": "唐岗 <429517385@qq.com>",
+  "description": "Social platform base on cnode",
+  "author": "Rik",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
-    "lint": "eslint --ext .js,.vue src"
+    "lint": "eslint --ext .js,.vue src",
+    "start": "node server/app.js"
   },
   "keywords": [
     "cnode",
