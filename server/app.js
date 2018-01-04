@@ -70,6 +70,7 @@ app.use(routes);
 
 // Static files
 app.use('/', express.static(__dirname + '/../dist'));
+app.use('/static', express.static(__dirname + '/imgs/'));
 console.log(__dirname);
 // Once database open, start server
 mongoose.connection.once('open', function callback() {

@@ -6,6 +6,15 @@ var mongoose = require('mongoose'),
   User = require('./user.model');
 
 exports.register = function(req, res) {
+  
+
+  var base64Data = req.body.avatar_url.replace(/^data:image\/\w+;base64,/, "");
+  var path = __dirname + "/../../imgs/" + topic._id + "/" + i + ".png";
+
+  fs.writeFile(path, base64Data, 'base64', (err) => {
+    console.log(err);
+  });
+  
   var newUser = new User(req.body);
   newUser.hash_password = bcrypt.hashSync(req.body.password, 10);
   newUser.save(function(err, user) {

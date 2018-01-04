@@ -26,6 +26,7 @@ var TopicSchema = new Schema({
   },
   hasImage: Boolean,
   replies: [],
+  smaill_imgs: [],
   city: String
 },
   {

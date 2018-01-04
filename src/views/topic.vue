@@ -27,6 +27,13 @@
                     <span class="name">{{topic.visit_count}}次浏览</span>
                 </div>
             </section>
+            <carousel-3d :controls-visible="true" :clickable="false">
+                                    <slide v-for="img, key in topic.imgs[0].imgs" :index="key">
+                                        <img style="width:360px;height:270px;" class="" :src="img" />
+                                    </slide>
+
+
+            </carousel-3d>
 
             <section class='markdown-body topic-content' v-html="topic.content">
 
@@ -84,109 +91,113 @@
     </div>
 </template>
 <script>
-    import $ from 'webpack-zepto';
-    import utils from '../libs/utils.js';
-    import nvHead from '../components/header.vue';
-    import nvReply from '../components/reply.vue';
-    import nvTop from '../components/backtotop.vue';
-    import {
-        mapGetters
-    } from 'vuex';
+import $ from "webpack-zepto";
+import utils from "../libs/utils.js";
+import nvHead from "../components/header.vue";
+import nvReply from "../components/reply.vue";
+import nvTop from "../components/backtotop.vue";
+import { mapGetters } from "vuex";
 
-    export default {
-        data() {
-            return {
-                showMenu: false, // 是否展开左侧菜单
-                topic: {}, // 主题
-                noData: false,
-                topicId: '',
-                curReplyId: ''
-            };
-        },
-        computed: {
-            ...mapGetters({
-                userInfo: 'getUserInfo'
-            })
-        },
-        mounted() {
-            // 隐藏左侧展开菜单
-            this.showMenu = false;
-
-            // 获取url传的tab参数
-            this.topicId = this.$route.params.id;
-
-            // 加载主题数据
-            $.get('/api/topics/' + this.topicId, (d) => {
-                if (d) {
-                    this.topic = d;
-                } else {
-                    this.noData = true;
-                }
-            });
-        },
-        methods: {
-            getTabInfo(tab, good = false, top, isClass) {
-                return utils.getTabInfo(tab, good, top, isClass);
-            },
-            getLastTimeStr(time, ago) {
-                return utils.getLastTimeStr(time, ago);
-            },
-            isUps(ups) {
-                return $.inArray(this.userInfo.userId, ups) >= 0;
-            },
-            addReply(id) {
-                this.curReplyId = id;
-                if (!this.userInfo.userId) {
-                    this.$router.push({
-                        name: 'login',
-                        params: {
-                            redirect: encodeURIComponent(this.$route.path)
-                        }
-                    });
-                }
-            },
-            hideItemReply() {
-                this.curReplyId = '';
-            },
-            upReply(item) {
-                if (!this.userInfo.userId) {
-                    this.$router.push({
-                        name: 'login',
-                        params: {
-                            redirect: encodeURIComponent(this.$route.path)
-                        }
-                    });
-                } else {
-                    $.ajax({
-                        type: 'POST',
-                        url: 'https://cnodejs.org/api/v1/reply/' + item.id + '/ups',
-                        data: {
-                            accesstoken: this.userInfo.token
-                        },
-                        dataType: 'json',
-                        success: (res) => {
-                            if (res.success) {
-                                if (res.action === 'down') {
-                                    let index = $.inArray(this.userInfo.userId, item.ups);
-                                    item.ups.splice(index, 1);
-                                } else {
-                                    item.ups.push(this.userInfo.userId);
-                                }
-                            }
-                        },
-                        error: (res) => {
-                            let error = JSON.parse(res.responseText);
-                            this.$alert(error.error_msg);
-                            return false;
-                        }
-                    });
-                }
-            }
-        },
-        components: {
-            nvHead,
-            nvReply,
-            nvTop
-        }
+export default {
+  data() {
+    return {
+      showMenu: false, // 是否展开左侧菜单
+      topic: {}, // 主题
+      noData: false,
+      topicId: "",
+      curReplyId: ""
     };
+  },
+  computed: {
+    ...mapGetters({
+      userInfo: "getUserInfo"
+    })
+  },
+  mounted() {
+    // 隐藏左侧展开菜单
+    this.showMenu = false;
+
+    // 获取url传的tab参数
+    this.topicId = this.$route.params.id;
+
+    // 加载主题数据
+    $.get("/api/topics/" + this.topicId, d => {
+      if (d) {
+        if (d.imgs.length == 0){
+            d.imgs[0]={
+                img: []
+            }
+            console.log(d);
+        }
+        this.topic = d;
+      } else {
+        this.noData = true;
+      }
+    });
+  },
+  methods: {
+    getTabInfo(tab, good = false, top, isClass) {
+      return utils.getTabInfo(tab, good, top, isClass);
+    },
+    getLastTimeStr(time, ago) {
+      return utils.getLastTimeStr(time, ago);
+    },
+    isUps(ups) {
+      return $.inArray(this.userInfo.userId, ups) >= 0;
+    },
+    addReply(id) {
+      this.curReplyId = id;
+      if (!this.userInfo.userId) {
+        this.$router.push({
+          name: "login",
+          params: {
+            redirect: encodeURIComponent(this.$route.path)
+          }
+        });
+      }
+    },
+    hideItemReply() {
+      this.curReplyId = "";
+    },
+    upReply(item) {
+      if (!this.userInfo.userId) {
+        this.$router.push({
+          name: "login",
+          params: {
+            redirect: encodeURIComponent(this.$route.path)
+          }
+        });
+      } else {
+        $.ajax({
+          type: "POST",
+          url: "https://cnodejs.org/api/v1/reply/" + item.id + "/ups",
+          data: {
+            accesstoken: this.userInfo.token
+          },
+          dataType: "json",
+          success: res => {
+            if (res.success) {
+              if (res.action === "down") {
+                let index = $.inArray(this.userInfo.userId, item.ups);
+                item.ups.splice(index, 1);
+              } else {
+                item.ups.push(this.userInfo.userId);
+              }
+            }
+          },
+          error: res => {
+            let error = JSON.parse(res.responseText);
+            this.$alert(error.error_msg);
+            return false;
+          }
+        });
+      }
+    }
+  },
+  components: {
+    nvHead,
+    nvReply,
+    nvTop
+  }
+};
 </script>

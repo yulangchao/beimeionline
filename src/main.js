@@ -6,6 +6,9 @@ import routes from './routers';
 import Alert from './libs/alert';
 import store from './vuex/user';
 import FastClick from 'fastclick';
+import Carousel3d from 'vue-carousel-3d';
+
+Vue.use(Carousel3d);
 Vue.use(VueRouter);
 Vue.use(Alert);
 

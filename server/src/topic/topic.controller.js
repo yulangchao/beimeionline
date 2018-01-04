@@ -4,6 +4,9 @@ var Topic = require('./topic.model');
 var Img = require('../img/img.model');
 var Reply = require('../reply/reply.model');
 var jwt = require('jsonwebtoken');
+var fs = require('fs');
+var mkdirp = require('mkdirp');
+var thumb = require('node-thumbnail').thumb;
 /**
  * GET /topics
  *
@@ -12,14 +15,13 @@ var jwt = require('jsonwebtoken');
  *
  */
 exports.find = function (req, res, next) {
-  console.log(req.query.tab);
   if (req.query.tab == "all") {
     Topic.find({}, function (err, topics) {
       if (err) {
         return next(err);
       }
       return res.status(200).json(topics);
-    }).skip((req.query.page - 1) * 20).limit(Number(req.query.limit)).
+    }).skip((req.query.page - 1) * 5).limit(Number(req.query.limit)).
       sort({ top: -1, created_at: -1 });
   } else if (req.query.tab == "good") {
     Topic.find({
@@ -29,7 +31,7 @@ exports.find = function (req, res, next) {
         return next(err);
       }
       return res.status(200).json(topics);
-    }).skip((req.query.page - 1) * 20).limit(Number(req.query.limit)).
+    }).skip((req.query.page - 1) * 5).limit(Number(req.query.limit)).
       sort({ top: -1, created_at: -1 });
   } else {
     Topic.find({
@@ -39,7 +41,7 @@ exports.find = function (req, res, next) {
         return next(err);
       }
       return res.status(200).json(topics);
-    }).skip((req.query.page - 1) * 20).limit(Number(req.query.limit)).
+    }).skip((req.query.page - 1) * 5).limit(Number(req.query.limit)).
       sort({ top: -1, created_at: -1 });
   }
 };
@@ -80,7 +82,6 @@ exports.get = function (req, res, next) {
           }
         }
       ], function (err, topic) {
-        console.log(topic);
         if (err) {
           return next(err);
         }
@@ -115,29 +116,84 @@ exports.post = function (req, res, next) {
     }
 
     if (req.body.imgs) {
-      topic.hasImage = true;
-      var img_data = {
-        topicId: topic._id,
-        imgs: req.body.imgs
+      var imgs = [];
+      var smaill_imgs = [];
+      var count = 0;
+      for (let i in req.body.imgs) {
+        smaill_imgs.push("/static/"+ topic._id + "/" + i + "_thumb.png");
       }
-      Img.create(img_data, function (err, imgs) {
+      mkdirp(__dirname + "/../../imgs/" + topic._id, function (err) {
+
+        if (err) return cb(err);
+
+        for (let i in req.body.imgs) {
+          var base64Data = req.body.imgs[i].replace(/^data:image\/\w+;base64,/, "");
+          console.log(123);
+          var path = __dirname + "/../../imgs/" + topic._id + "/" + i + ".png";
+          fs.writeFile(path, base64Data, 'base64', (err) => {
+            console.log(err);
+            count++;
+          });
+
+          imgs.push("/static/"+ topic._id + "/" + i + ".png");
+
+        }
+        
+        var img_data = {
+          topicId: topic._id,
+          imgs: imgs
+        }
+        Img.create(img_data, function (err, imgs) {
+          if (err) {
+            return next(err);
+          }
+        });
+
+
+        var myVar = setInterval(function(){
+             console.log(count);
+             if(count == req.body.imgs.length){
+              clearInterval(myVar);
+              thumb({
+                source: __dirname + "/../../imgs/" + topic._id + "/", // could be a filename: dest/path/image.jpg
+                destination: __dirname + "/../../imgs/" + topic._id + "/",
+                concurrency: 6,
+                width: 200
+              }, function(files, err, stdout, stderr) {
+
+                topic.hasImage = true;
+                topic.smaill_imgs = smaill_imgs;
+          
+                topic.id = topic._id;
+          
+                topic.save(function (err) {
+                  if (err) {
+                    return next(err);
+                  }
+                });
+                return res.status(201).json(topic);
+              });
+
+             }
+        }, 1000);
+      });
+
+  
+
+    } else {
+      topic.hasImage = false;
+
+      topic.id = topic._id;
+
+      topic.save(function (err) {
         if (err) {
           return next(err);
         }
       });
-    } else{
-      topic.hasImage = false;
+  
+      return res.status(201).json(topic);
     }
 
-    topic.id = topic._id;
-
-    topic.save(function (err) {
-      if (err) {
-        return next(err);
-      }
-    });
-
-    return res.status(201).json(topic);
   });
 };
 
@@ -182,7 +238,7 @@ exports.reply = function (req, res, next) {
     var user = jwt.decode(req.body.accesstoken);
     var reply = {
       author: {
-        loginname: user.fullName, 
+        loginname: user.fullName,
         avatar_url: user.avatar_url
       },
       content: req.body.content,
