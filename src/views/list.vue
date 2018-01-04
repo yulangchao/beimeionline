@@ -108,7 +108,7 @@ export default {
     //         lat: position.coords.latitude,
     //         lng: position.coords.longitude
     //     };
-
+//
     // });
     if (1) {
       this.searchKey.city = "Vancouver";
