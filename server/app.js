@@ -9,7 +9,7 @@ var config = require('./config/default');
 var cors = require('cors');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
-
+var history = require('connect-history-api-fallback');
 var routes = require('./src/routes');
 
 
@@ -58,6 +58,7 @@ connectWithRetry();
  * Express app configurations
  */
 var app = express();
+app.use(history());
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded(
   {limit: '50mb', extended: true, parameterLimit: 1000000}
