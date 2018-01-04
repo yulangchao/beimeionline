@@ -8,7 +8,7 @@
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
     "lint": "eslint --ext .js,.vue src",
-    "start": "node server/app.js"
+    "start": "npm run dev & node server/app.js"
   },
   "keywords": [
     "cnode",
