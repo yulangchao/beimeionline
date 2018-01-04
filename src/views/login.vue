@@ -36,7 +36,6 @@
         },
         methods: {
             logon() {
-                alert(111);
                 $.ajax({
                     type: 'POST',
                     url: '/auth/sign_in',
@@ -49,7 +48,6 @@
                         
                         this.token = res.token;
                         var res = jwt.decode(res.token);
-                        console.log(res);
                         let user = {
                             loginname: res.fullName,
                             avatar_url: res.avatar_url,
@@ -65,10 +63,8 @@
                         });
                     },
                     error: (res) => {
-                        alert(res.status);
                         var error = JSON.parse(res.responseText);
                         console.log(error);
-                        alert(error);
                         this.$alert(error.message);
                     }
                 });
