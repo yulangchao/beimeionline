@@ -1,5 +1,5 @@
 module.exports = {
-  APP_PORT: process.env.APP_PORT || 3002,
+  APP_PORT: process.env.APP_PORT || 80,
   DB_HOST: process.env.DB_HOST || 'richardyych:2E8Evan@ds161823.mlab.com',
   DB_PORT: process.env.DB_PORT || 61823,
   DB_NAME: process.env.DB_NAME || 'heroku_955m2hr5'
