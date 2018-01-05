@@ -67,20 +67,20 @@
             })
         },
         mounted() {
-            $.get('https://cnodejs.org/api/v1/messages?accesstoken=' + this.userInfo.token, (d) => {
-                if (d && d.data) {
-                    this.message = d.data;
-                    this.no_read_len = d.data.hasnot_read_messages.length;
-                    if (d.data.hasnot_read_messages.length > 0) {
-                        this.currentData = d.data.hasnot_read_messages;
-                    } else {
-                        this.currentData = d.data.has_read_messages;
-                        this.selectItem = 2;
-                    }
-                    this.noData = this.currentData.length === 0;
-                } else {
-                    this.noData = true;
-                }
+            $.get('' + this.userInfo.token, (d) => {
+                // if (d && d.data) {
+                //     this.message = d.data;
+                //     this.no_read_len = d.data.hasnot_read_messages.length;
+                //     if (d.data.hasnot_read_messages.length > 0) {
+                //         this.currentData = d.data.hasnot_read_messages;
+                //     } else {
+                //         this.currentData = d.data.has_read_messages;
+                //         this.selectItem = 2;
+                //     }
+                //     this.noData = this.currentData.length === 0;
+                // } else {
+                //     this.noData = true;
+                // }
             });
         },
         methods: {

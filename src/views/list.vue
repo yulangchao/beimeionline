@@ -166,14 +166,14 @@ export default {
     getTitleStr(tab) {
       let str = "";
       switch (tab) {
-        case "share":
-          str = "分享";
+        case "game":
+          str = "游戏";
           break;
-        case "ask":
-          str = "问答";
+        case "house":
+          str = "房屋";
           break;
         case "job":
-          str = "招聘";
+          str = "工作";
           break;
         case "good":
           str = "认证";

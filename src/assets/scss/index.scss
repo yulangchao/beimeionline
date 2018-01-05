@@ -1,4 +1,4 @@
-#brim-mask {
+#brim-mhouse {
     pointer-events: none;
 }
 
@@ -44,7 +44,7 @@
         &.top:before {
             background: #E74C3C;
         }
-        &.ask:before {
+        &.house:before {
             background: #3498DB;
         }
         &.good:before {
@@ -53,7 +53,7 @@
         &.job:before {
             background: #9B59B6;
         }
-        &.share:before {
+        &.game:before {
             background: #1ABC9C;
         }
     }

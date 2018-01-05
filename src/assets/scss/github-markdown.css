@@ -633,15 +633,15 @@
   content: "";
 }
 
-.markdown-body .task-list-item {
+.markdown-body .thouse-list-item {
   list-style-type: none;
 }
 
-.markdown-body .task-list-item+.task-list-item {
+.markdown-body .thouse-list-item+.thouse-list-item {
   margin-top: 3px;
 }
 
-.markdown-body .task-list-item input {
+.markdown-body .thouse-list-item input {
   margin: 0 0.35em 0.25em -1.6em;
   vertical-align: middle;
 }

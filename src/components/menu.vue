@@ -4,18 +4,26 @@
         <section class="list-ul">
             <router-link class="icon-quanbu iconfont item" :to="{'name':'list',query:{tab:'all'}}">全部</router-link>
             <router-link class="icon-hao iconfont item" :to="{'name':'list',query:{tab:'good'}}">认证</router-link>
-            <router-link class="icon-fenxiang iconfont item" :to="{'name':'list',query:{tab:'share'}}">分享</router-link>
-            <router-link class="icon-wenda iconfont item" :to="{'name':'list',query:{tab:'ask'}}">问答</router-link>
-            <router-link class="icon-zhaopin iconfont item" :to="{'name':'list',query:{tab:'job'}}">招聘</router-link>
+            <router-link class="icon-fenxiang iconfont item" :to="{'name':'list',query:{tab:'game'}}">游戏</router-link>
+            <router-link class="icon-wenda iconfont item" :to="{'name':'list',query:{tab:'house'}}">房屋</router-link>
+            <router-link class="icon-zhaopin iconfont item" :to="{'name':'list',query:{tab:'job'}}">工作</router-link>
             <router-link class="icon-xiaoxi iconfont item line" :to="{'name':'message'}">消息</router-link>
             <router-link class="icon-about iconfont item" :to="{'name':'about'}">关于</router-link>
-            <a class="icon-about iconfont item" @click="logout">登出</a>
+            <a class="icon-about iconfont item" v-if="userInfo.loginname" @click="logout">登出</a>
         </section>
     </section>
 </template>
 <script>
+    import {
+        mapGetters
+    } from 'vuex';
     export default {
         replace: true,
+        computed: {
+            ...mapGetters({
+                userInfo: 'getUserInfo'
+            })
+        },
         props: ['showMenu', 'pageType', 'nickName', 'profileUrl'],
         components: {
             'userInfo': require('./user-info.vue')
@@ -23,7 +31,7 @@
         methods:{
             logout(){
                 window.window.sessionStorage.clear();
-                this.$store.dispatch('setUserInfo', null);
+                this.$store.dispatch('setUserInfo', {loginname: null});
                 this.$router.push('login');
             }
         }

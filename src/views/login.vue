@@ -4,17 +4,17 @@
         </nv-head>
         <section class="page-body">
             <div class="label">
-                <input class="txt" type="text" placeholder="Email" v-model="email" maxlength="36">
+                <input class="form-control" type="text" placeholder="Email" v-model="email" maxlength="36">
             </div>
             <div class="label">
-                <input class="txt" type="text" placeholder="Password" v-model="password" maxlength="36">
+                <input class="form-control" type="password" placeholder="Password" v-model="password" maxlength="36">
             </div>
             <div class="label">
-                <a class="button" @click="logon">登录</a>
+                <a class="btn btn-primary btn-block" @click="logon">登录</a>
             </div>
             <router-link :to="{name:'register'}">
             <div class="label">
-                <a class="button">注册</a>
+                <a class="btn btn-primary btn-block">注册</a>
             </div>
             </router-link>
         </section>

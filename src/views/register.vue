@@ -4,18 +4,19 @@
         </nv-head>
         <section class="page-body">
             <div class="label">
-                <input class="txt" type="text" placeholder="Name" v-model="name" maxlength="36" required>
+                <input class="form-control" type="text" placeholder="Name" v-model="name" maxlength="36" required>
             </div>
             <div class="label">
-                <input class="txt" type="email" placeholder="Email" v-model="email" maxlength="36" required>
+                <input class="form-control" type="email" placeholder="Email" v-model="email" maxlength="36" required>
             </div>
             <div class="label">
-                <input class="txt" type="password" placeholder="Passwrod" v-model="password" maxlength="36" required>
+                <input class="form-control" type="password" placeholder="Passwrod" v-model="password" maxlength="36" required>
             </div>
             <div class="label">
-                <input class="txt" type="password" placeholder="Confirm Passwrod" v-model="confirmpassword" maxlength="36" required >
+                <input class="form-control" type="password" placeholder="Confirm Passwrod" v-model="confirmpassword" maxlength="36" required >
             </div>
-            <div class="vue-uploader">
+
+            <div style="margin: 7.2px;" class="vue-uploader">
                 <div class="file-list">
                     <section v-for="(file, index) of files" class="file-item draggable-item">
                         <img :src="file.src" alt="" ondragstart="return false;">
@@ -34,7 +35,7 @@
                 <input type="file" id="imgs" accept="image/*" @change="fileChanged" ref="file">
             </div>
             <div class="label">
-                <a class="button" type="submit" @click="register">注册</a>
+                <a class="btn btn-primary btn-block" type="submit" @click="register">注册</a>
             </div>
         </section>
     </div>

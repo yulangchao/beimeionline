@@ -6,9 +6,9 @@
         <div class="add-container">
             <div class="line">选择分类：
                 <select class="add-tab" v-model="topic.tab">
-                    <option value="share">分享</option>
-                    <option value="ask">问答</option>
-                    <option value="job">招聘</option>
+                    <option value="game">游戏</option>
+                    <option value="house">房屋</option>
+                    <option value="job">工作</option>
                 </select>
                 <a class="add-btn" @click="addTopic">发布</a>
             </div>
@@ -61,7 +61,7 @@ export default {
   data() {
     return {
       topic: {
-        tab: "share",
+        tab: "game",
         title: "11111111111111111",
         content: "11111111111111111",
         city: "Vancouver"

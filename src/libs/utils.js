@@ -147,16 +147,16 @@ exports.getTabInfo = (tab, good, top, isClass) => {
         className = 'good';
     } else {
         switch (tab) {
-            case 'share':
-                str = '分享';
-                className = 'share';
+            case 'game':
+                str = '游戏';
+                className = 'game';
                 break;
-            case 'ask':
-                str = '问答';
-                className = 'ask';
+            case 'house':
+                str = '房屋';
+                className = 'house';
                 break;
             case 'job':
-                str = '招聘';
+                str = '工作';
                 className = 'job';
                 break;
             default:
