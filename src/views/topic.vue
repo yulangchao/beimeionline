@@ -28,7 +28,7 @@
                 </div>
             </section>
             <carousel-3d :controls-visible="true" :clickable="false">
-                                    <slide v-for="img, key in topic.imgs[0].imgs" :index="key">
+                                    <slide v-for="img, key in topic.imgs" :index="key">
                                         <img style="width:360px;height:270px;" class="" :src="img" />
                                     </slide>
 

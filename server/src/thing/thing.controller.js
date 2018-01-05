@@ -37,6 +37,13 @@ exports.get = function(req, res, next) {
   });
 };
 
+
+
+
+exports.test = function(req, res, next) {
+  return res.status(200).json("123");
+};
+
 /**
  * POST /things
  *

@@ -28,7 +28,9 @@
                         </div>
                     </section>
                 </div>
-
+                <div v-if="loading" class="load-bg">
+                      <circle4></circle4>
+                </div>
                 <input type="file" id="imgs" accept="image/*" @change="fileChanged" ref="file">
             </div>
             <div class="label">
@@ -42,6 +44,7 @@
 import $ from "webpack-zepto";
 import nvHead from "../components/header.vue";
 import jwt from "jsonwebtoken";
+import { Circle4 } from "vue-loading-spinner";
 
 export default {
   data() {
@@ -56,13 +59,14 @@ export default {
       point: {},
       uploading: false,
       percent: 0,
-      mobile: window.innerWidth <= 992
+      mobile: window.innerWidth <= 992,
+      loading: false
     };
   },
   mounted() {
-        window.addEventListener('resize', function(event){
-           this.mobile = (window.innerWidth <= 992);
-        });
+    window.addEventListener("resize", function(event) {
+      this.mobile = window.innerWidth <= 992;
+    });
   },
   methods: {
     add() {
@@ -139,6 +143,11 @@ export default {
         this.$alert("Passwords are not matched");
         return;
       }
+      this.loading = true;
+      const formData = new FormData();
+      this.files.forEach((item, key) => {
+        formData.append(key, item.file);
+      });
       $.ajax({
         type: "POST",
         url: "/auth/register",
@@ -146,15 +155,40 @@ export default {
           email: this.email,
           password: this.password,
           fullName: this.name,
-          avatar_url: this.files[0].src
+          hasImg: this.files.length > 0
         },
         dataType: "json",
         success: res => {
-          this.$alert("Register done");
-          this.$router.push("login");
+          if (res.avatar_url == null) {
+            formData.append("id", res._id);
+            $.ajax({
+              type: "POST",
+              url: "/auth/register/upload",
+              data: formData,
+              processData: false,
+              contentType: false,
+              success: res => {
+                this.loading = false;
+                this.$alert("Register done");
+                this.$router.push("/login");
+              },
+              error: res => {
+                this.loading = false;
+                this.$alert("not done");
+                var error = JSON.parse(res.responseText);
+                console.log(error);
+                this.$alert(error.message.message);
+              }
+            });
+          } else {
+            this.loading = false;
+            this.$alert("Register done");
+            this.$router.push("/login");
+          }
         },
         error: res => {
-            this.$alert("not done");
+          this.loading = false;
+          this.$alert("not done");
           var error = JSON.parse(res.responseText);
           console.log(error);
           this.$alert(error.message.message);
@@ -163,11 +197,32 @@ export default {
     }
   },
   components: {
-    nvHead
+    nvHead,
+    Circle4
   }
 };
 </script>
 <style lang="scss">
+.load-bg {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(1, 0, 0, 0.3);
+  top: 44px !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.spinner--circle-4 {
+  width: 80px !important;
+  height: 80px !important;
+  position: fixed !important;
+  top: 40%;
+  right: 0;
+  left: 0;
+  margin: auto;
+}
 .vue-uploader {
   border: 1px solid #e5e5e5;
 }

@@ -12,6 +12,7 @@ var mongoose = require('mongoose');
 var history = require('connect-history-api-fallback');
 var routes = require('./src/routes');
 
+var fileUpload = require('express-fileupload');
 
 /**
  * MongoDB configurations
@@ -58,7 +59,9 @@ connectWithRetry();
  * Express app configurations
  */
 var app = express();
-
+app.use(fileUpload({
+  limits: { fileSize: 20 * 1024 * 1024 },
+}));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded(
   {limit: '50mb', extended: true, parameterLimit: 1000000}

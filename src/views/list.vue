@@ -30,9 +30,9 @@
                                 </span>
                             </p>
                             <div class="row" style="padding:15px;">
-                                <img v-for="img,key in item.smaill_imgs" v-if="key<3" class="col-xs-3 small-img" :src="img" />
+                                <img v-for="img,key in item.small_imgs" v-if="key<3" class="col-xs-3 small-img" :src="img" />
                 
-                                <div v-if="item.smaill_imgs.length>3" class="col-xs-3">......</div>
+                                <div v-if="item.small_imgs.length>3" class="col-xs-3">......</div>
                             </div>
                             <div>
                                 <span style="float:right">{{item.created_at | getLastTimeStr(true)}}</span>
