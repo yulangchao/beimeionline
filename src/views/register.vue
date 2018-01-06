@@ -177,8 +177,8 @@ export default {
                 this.loading = false;
                 this.$alert("not done");
                 var error = JSON.parse(res.responseText);
-                console.log(error);
-                this.$alert(error.message.message);
+                console.log(typeof error.message.errmsg == "undefined");
+                this.$alert((typeof error.message.errmsg != "undefined") ? error.message.errmsg : error.message,message);
               }
             });
           } else {
@@ -191,8 +191,9 @@ export default {
           this.loading = false;
           this.$alert("not done");
           var error = JSON.parse(res.responseText);
-          console.log(error);
-          this.$alert(error.message.message);
+           console.log(error);
+          console.log(typeof error.message.errmsg == "undefined");
+          this.$alert((typeof error.message.errmsg != "undefined") ? error.message.errmsg : error.message.message);
         }
       });
     }

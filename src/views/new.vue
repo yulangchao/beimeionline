@@ -62,8 +62,8 @@ export default {
     return {
       topic: {
         tab: "game",
-        title: "11111111111111111",
-        content: "11111111111111111",
+        title: "",
+        content: "",
         city: "Vancouver"
       },
       err: "",
@@ -160,7 +160,7 @@ export default {
       let title = $.trim(this.topic.title);
       let contents = $.trim(this.topic.content);
 
-      if (!title || title.length < 10) {
+      if (!title || title.length < 5) {
         this.err = "title";
         return false;
       }

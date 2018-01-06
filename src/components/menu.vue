@@ -9,7 +9,7 @@
             <router-link class="icon-zhaopin iconfont item" :to="{'name':'list',query:{tab:'job'}}">工作</router-link>
             <router-link class="icon-xiaoxi iconfont item line" :to="{'name':'message'}">消息</router-link>
             <router-link class="icon-about iconfont item" :to="{'name':'about'}">关于</router-link>
-            <a class="icon-about iconfont item" v-if="userInfo.loginname" @click="logout">登出</a>
+            <a class="iconfont item" v-if="userInfo.loginname" @click="logout"><i class="fa fa-sign-out" aria-hidden="true" style="margin-right:30px"></i>登出</a>
         </section>
     </section>
 </template>
@@ -32,7 +32,7 @@
             logout(){
                 window.window.sessionStorage.clear();
                 this.$store.dispatch('setUserInfo', {loginname: null});
-                this.$router.push('login');
+                this.$router.push('/login');
             }
         }
     };

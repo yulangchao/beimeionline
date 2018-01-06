@@ -24,6 +24,6 @@ router.post('/api/topics/upload/', topic.upload);
 router.post('/auth/register', userHandlers.register);
 router.post('/auth/register/upload/', userHandlers.upload);
 router.post('/auth/sign_in', userHandlers.sign_in);
-
+router.get('/api/user/getInfo', userHandlers.getInfo);
 
 module.exports = router;

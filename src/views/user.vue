@@ -6,12 +6,12 @@
             <span class="u-name" v-text="user.loginname"></span>
             <div class="u-bottom">
                 <span class="u-time" v-text="getLastTimeStr(user.create_at, false)"></span>
-                <span class="u-score">积分：{{user.score}}</span>
+                <span class="u-score">文章数：{{user.topics.length}}</span>
             </div>
         </section>
         <section class="topics">
             <ul class="user-tabs">
-                <li class="item br" :class='{"selected":selectItem === 1}' @click="changeItem(1)">最近回复</li>
+                <!-- <li class="item br" :class='{"selected":selectItem === 1}' @click="changeItem(1)">最近回复</li> -->
                 <li class="item" :class='{"selected":selectItem === 2}' @click="changeItem(2)">最新发布</li>
             </ul>
             <div class="message" v-for="item in currentData">
@@ -19,13 +19,13 @@
                     <router-link class="head" :to="{name:'user',params:{loginname:item.author.loginname}}">
                         <img :src="item.author.avatar_url" />
                     </router-link>
-                    <router-link class="info" :to="{name:'topic',params:{id:item.id}}">
+                    <router-link class="info" :to="{name:'topic',params:{id:item._id}}">
                         <div class="t-title">{{item.title}}</div>
                         <span class="cl mt12">
                             <span class="name">{{item.author.loginname}}</span>
                         </span>
                         <span class="cr mt12">
-                            <span class="name" v-text="getLastTimeStr(item.last_reply_at, true)"></span>
+                            <span class="name" v-text="getLastTimeStr(item.created_at, true)"></span>
                         </span>
                     </router-link>
                 </section>
@@ -37,11 +37,20 @@
         </section>
     </div>
 </template>
+
+<style lang="scss">
+.user-tabs .item{
+    width: 100%;
+}
+
+</style>
 <script>
     import $ from 'webpack-zepto';
     import utils from '../libs/utils.js';
     import nvHead from '../components/header.vue';
-
+    import {
+        mapGetters
+    } from 'vuex';
     export default {
         data() {
             return {
@@ -50,7 +59,13 @@
                 selectItem: 1
             };
         },
+        computed: {
+            ...mapGetters({
+                userInfo: 'getUserInfo'
+            })
+        },
         mounted() {
+            console.log(this.userInfo.token);
             this.getUser();
         },
         methods: {
@@ -71,14 +86,15 @@
                     });
                     return false;
                 }
-                $.get('https://cnodejs.org/api/v1/user/' + loginname, (d) => {
-                    if (d && d.data) {
-                        let data = d.data;
+                $.get('/api/user/getInfo?name='+ loginname, (d) => {
+                    console.log(d);
+                    if (d) {
+                        let data = d;
                         this.user = data;
-                        if (data.recent_replies.length > 0) {
+                        if (0) {
                             this.currentData = data.recent_replies;
                         } else {
-                            this.currentData = data.recent_topics;
+                            this.currentData = data.topics;
                             this.selectItem = 2;
                         }
                     }

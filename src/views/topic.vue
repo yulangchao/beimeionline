@@ -27,7 +27,7 @@
                     <span class="name">{{topic.visit_count}}次浏览</span>
                 </div>
             </section>
-            <carousel-3d :controls-visible="true" :clickable="false">
+            <carousel-3d v-if="topic.imgs.length" :controls-visible="true" :clickable="false">
                                     <slide v-for="img, key in topic.imgs" :index="key">
                                         <img style="width:360px;height:270px;" class="" :src="img" />
                                     </slide>

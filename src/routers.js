@@ -11,6 +11,19 @@ const List = resolve => {
     });
 };
 
+const Login = resolve => {
+    require.ensure(['./views/login.vue'], () => {
+        resolve(require('./views/login.vue'));
+    });
+};
+
+const Register = resolve => {
+    require.ensure(['./views/register.vue'], () => {
+        resolve(require('./views/register.vue'));
+    });
+};
+
+
 const routers = [{
     path: '/',
     name: 'home',
@@ -68,19 +81,11 @@ const routers = [{
 }, {
     path: '/login',
     name: 'login',
-    component(resolve) {
-        require.ensure(['./views/login.vue'], () => {
-            resolve(require('./views/login.vue'));
-        });
-    }
+    component: Login
 }, {
     path: '/register',
     name: 'register',
-    component(resolve) {
-        require.ensure(['./views/register.vue'], () => {
-            resolve(require('./views/register.vue'));
-        });
-    }
+    component: Register
 }];
 
 export default routers;

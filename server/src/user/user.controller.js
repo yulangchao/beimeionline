@@ -3,10 +3,14 @@
 var mongoose = require('mongoose'),
   jwt = require('jsonwebtoken'),
   bcrypt = require('bcrypt'),
-  User = require('./user.model');
+  User = require('./user.model'),
+  Topic = require('../topic/topic.model');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var thumb = require('node-thumbnail').thumb;
+var jwt = require('jsonwebtoken');
+
+
 exports.register = function (req, res) {
   if (req.body.hasImg == "false") {
     req.body.avatar_url = "https://avatars1.githubusercontent.com/u/227713?v=3&s=120";
@@ -47,6 +51,26 @@ exports.loginRequired = function (req, res, next) {
     return res.status(401).json({ message: 'Unauthorized user!' });
   }
 };
+
+exports.getInfo = function (req, res, next) {
+  User.findOne({
+    fullName: req.query.name
+  }, function (err, user) {
+
+    if (err) throw err;
+
+    Topic.find({
+      "author_id": user._id
+    }, function (err, topics) {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json({ email: user.email, loginname: user.fullName, _id: user._id, avatar_url: user.avatar_url, create_at: user.created, topics: topics });
+    }).limit(10).sort({ created_at: -1 });
+
+  });
+};
+
 
 
 exports.upload = function (req, res, next) {
