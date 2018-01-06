@@ -123,12 +123,6 @@ export default {
     // 加载主题数据
     $.get("/api/topics/" + this.topicId, d => {
       if (d) {
-        if (d.imgs.length == 0){
-            d.imgs[0]={
-                img: []
-            }
-            console.log(d);
-        }
         this.topic = d;
       } else {
         this.noData = true;

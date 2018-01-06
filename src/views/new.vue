@@ -157,7 +157,6 @@ export default {
       this.files.forEach((item, key) => {
         formData.append(key, item.file);
       });
-      console.log(this.userInfo);
       let title = $.trim(this.topic.title);
       let contents = $.trim(this.topic.content);
 
