@@ -29,6 +29,8 @@
                 :class="{'err':err=='content'}"
                 placeholder='回复支持Markdown语法,请注意标记代码'>
             </textarea>
+            <!-- <vue-markdown :source="topic.content"></vue-markdown>
+            <div v-html='markdown.toHTML(topic.content)' ></div> -->
             <div class="vue-uploader">
                 <div class="file-list">
                     <section v-for="(file, index) of files" class="file-item draggable-item">
@@ -56,10 +58,12 @@ import $ from "webpack-zepto";
 import nvHead from "../components/header.vue";
 import { mapGetters } from "vuex";
 import { Circle4 } from "vue-loading-spinner";
+import {markdown} from 'markdown';
 
 export default {
   data() {
     return {
+      markdown: markdown,
       topic: {
         tab: "game",
         title: "",
@@ -171,7 +175,7 @@ export default {
       this.loading = true;
       let postData = {
         ...this.topic,
-        content: this.topic.content,
+        content: markdown.toHTML(this.topic.content),
         accesstoken: this.userInfo.token,
         hasImage: this.files.length > 0
       };
