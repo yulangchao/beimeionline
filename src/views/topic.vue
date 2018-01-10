@@ -55,25 +55,25 @@
                                     <span class="name" v-text="item.author.loginname"></span>
                                     <span class="name mt10">
                                         <span></span>
-                                        发布于:{{item.created_at | getLastTimeStr(true)}}</span>
+                                        发布于:{{item.create_at | getLastTimeStr(true)}}</span>
                                 </span>
                                 <span class="cr">
-                                    <!-- <span class="iconfont icon"
-                                        :class="{'uped':isUps(false)}"
+                                    <span class="iconfont icon"
+                                        :class="{'uped':isUps(item.ups)}"
                                         @click="upReply(item)">&#xe608;</span>
-                                    {{10}} -->
-                                    <span class="iconfont icon" @click="addReply(item.id)">&#xe609;</span>
+                                    {{item.ups.length}}
+                                    <span class="iconfont icon" @click="addReply(item._id)">&#xe609;</span>
                                 </span>
                             </div>
                         </section>
                         <div class="reply_content" v-html="item.content"></div>
                         <nv-reply :topic.sync="topic"
                                 :topic-id="topicId"
-                                :reply-id="item.id"
+                                :reply-id="item._id"
                                 :reply-to="item.author.loginname"
                                 :show.sync="curReplyId"
                                 @close="hideItemReply"
-                                v-if="userInfo.userId && curReplyId === item.id"></nv-reply>
+                                v-if="userInfo.userId && curReplyId === item._id"></nv-reply>
                     </li>
                 </ul>
             </section>
@@ -124,6 +124,11 @@ export default {
     $.get("/api/topics/" + this.topicId, d => {
       if (d) {
         this.topic = d;
+        $.get("/api/replies/" + this.topicId, d => {
+          if (d) {
+            this.topic.replies = d;
+          }
+        });
       } else {
         this.noData = true;
       }
@@ -162,29 +167,27 @@ export default {
           }
         });
       } else {
-        $.ajax({
-          type: "POST",
-          url: "https://cnodejs.org/api/v1/reply/" + item.id + "/ups",
-          data: {
-            accesstoken: this.userInfo.token
-          },
-          dataType: "json",
-          success: res => {
-            if (res.success) {
-              if (res.action === "down") {
-                let index = $.inArray(this.userInfo.userId, item.ups);
-                item.ups.splice(index, 1);
-              } else {
+        if ($.inArray(this.userInfo.userId, item.ups) < 0) {
+          $.ajax({
+            type: "POST",
+            url: "/api/reply/ups",
+            data: {
+              accesstoken: this.userInfo.token,
+              id: item._id
+            },
+            dataType: "json",
+            success: res => {
+              if (res) {
                 item.ups.push(this.userInfo.userId);
               }
+            },
+            error: res => {
+              let error = JSON.parse(res.responseText);
+              this.$alert(error.error_msg);
+              return false;
             }
-          },
-          error: res => {
-            let error = JSON.parse(res.responseText);
-            this.$alert(error.error_msg);
-            return false;
-          }
-        });
+          });
+        }
       }
     }
   },

@@ -6,15 +6,15 @@
             <span class="u-name" v-text="user.loginname"></span>
             <div class="u-bottom">
                 <span class="u-time" v-text="getLastTimeStr(user.create_at, false)"></span>
-                <span class="u-score">文章数：{{user.topics.length}}</span>
+                <span class="u-score">文章数：{{typeof user.topics == "undefined" ? 0: user.topics.length}}</span>
             </div>
         </section>
         <section class="topics">
             <ul class="user-tabs">
-                <!-- <li class="item br" :class='{"selected":selectItem === 1}' @click="changeItem(1)">最近回复</li> -->
-                <li class="item" :class='{"selected":selectItem === 2}' @click="changeItem(2)">最新发布</li>
+                <li class="item br" :class='{"selected":selectItem === 1}' @click="changeItem(1)">最近我的回复</li>
+                <li class="item" :class='{"selected":selectItem === 2}' @click="changeItem(2)">最新我的发布</li>
             </ul>
-            <div class="message" v-for="item in currentData">
+            <div class="message" v-for="item in currentData" v-if="typeof item.create_at == 'undefined'">
                 <section class="user">
                     <router-link class="head" :to="{name:'user',params:{loginname:item.author.loginname}}">
                         <img :src="item.author.avatar_url" />
@@ -30,6 +30,22 @@
                     </router-link>
                 </section>
             </div>
+            <div class="message" v-for="item in currentData" v-if="typeof item.create_at != 'undefined'">
+                <section class="user">
+                    <router-link class="head" :to="{name:'user',params:{loginname:item.author.loginname}}">
+                        <img :src="item.author.avatar_url" />
+                    </router-link>
+                    <router-link class="info" :to="{name:'topic',params:{id:item.topicId}}">
+                        <div class="t-title">{{item.topic_title}}</div>
+                        <span class="cl mt12">
+                            <span class="name" v-html="item.content">{{}}</span>
+                        </span>
+                        <span class="cr mt12">
+                            <span class="name" v-text="getLastTimeStr(item.create_at, true)"></span>
+                        </span>
+                    </router-link>
+                </section>
+            </div>
             <div class="no-data" v-show="currentData.length === 0">
                 <i class="iconfont icon-empty">&#xe60a;</i>
                 暂无数据!
@@ -39,10 +55,6 @@
 </template>
 
 <style lang="scss">
-.user-tabs .item{
-    width: 100%;
-}
-
 </style>
 <script>
     import $ from 'webpack-zepto';
@@ -65,14 +77,13 @@
             })
         },
         mounted() {
-            console.log(this.userInfo.token);
             this.getUser();
         },
         methods: {
             // 切换tab
             changeItem(idx) {
                 this.selectItem = idx;
-                this.currentData = idx === 1 ? this.user.recent_replies : this.user.recent_topics;
+                this.currentData = idx === 1 ? this.user.replies : this.user.topics;
             },
             getLastTimeStr(date, friendly) {
                 return utils.getLastTimeStr(date, friendly);
@@ -87,12 +98,11 @@
                     return false;
                 }
                 $.get('/api/user/getInfo?name='+ loginname, (d) => {
-                    console.log(d);
                     if (d) {
                         let data = d;
                         this.user = data;
-                        if (0) {
-                            this.currentData = data.recent_replies;
+                        if (data.replies) {
+                            this.currentData = data.replies;
                         } else {
                             this.currentData = data.topics;
                             this.selectItem = 2;

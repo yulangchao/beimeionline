@@ -24,8 +24,7 @@
         data() {
             return {
                 hasErr: false,
-                content: '',
-                author_txt: '<br/><br/><a class="form" href="https://github.com/shinygang/Vue-cnodejs">I‘m webapp-cnodejs-vue</a>'
+                content: ''
             };
         },
         computed: {
@@ -49,22 +48,26 @@
                     let replyContent = $('<div class="markdown-text"></div>').append(htmlText)[0].outerHTML;
                     let postData = {
                         accesstoken: this.userInfo.token,
-                        content: this.content
+                        content: replyContent
                     };
 
                     if (this.replyId) {
                         postData.reply_id = this.replyId;
                     }
+
+                    if (this.replyTo) {
+                        postData.replyTo = this.replyTo;
+                    }
+                    postData.title=this.topic.title;
                     $.ajax({
                         type: 'POST',
                         url: `/api/topics/${this.topicId}/replies`,
                         data: postData,
                         dataType: 'json',
                         success: (res) => {
-                            console.log(res);
                             if (res) {
                                 this.topic.replies.push({
-                                    id: 1,
+                                    _id: res._id,
                                     author: {
                                         loginname: this.userInfo.loginname,
                                         avatar_url: this.userInfo.avatar_url

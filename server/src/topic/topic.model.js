@@ -26,6 +26,10 @@ var TopicSchema = new Schema({
   },
   hasImage: Boolean,
   replies: [],
+  num_replies: {
+    type: Number,
+    default: 0
+  },
   small_imgs: [],
   imgs:[],
   city: String

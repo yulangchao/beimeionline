@@ -24,14 +24,14 @@
                             <span class="name" v-if="item.type==='reply'">回复了您的话题</span>
                         </span>
                         <span class="cr">
-                            <span class="name" v-text="getLastTimeStr(item.reply.create_at, true)"></span>
+                            <span class="name" v-text="getLastTimeStr(item.create_at, true)"></span>
                         </span>
                     </div>
                 </section>
-                <div class="reply_content" v-html="item.reply.content"></div>
-                <router-link :to="{name:'topic',params:{id:item.topic.id}}">
-                    <div class="topic-title">
-                        话题：{{item.topic.title}}
+                <div class="reply_content" v-html="item.content"></div>
+                <router-link :to="{name:'topic',params:{id:item.topicId}}">
+                    <div @click="vistied(item._id)" class="topic-title">
+                        话题：{{item.topic_title}}
                     </div>
                 </router-link>
             </div>
@@ -54,8 +54,8 @@
         data() {
             return {
                 showMenu: false,
-                selectItem: 2,
-                message: {},
+                selectItem: 1,
+                message: {hasnot_read_messages:[], has_read_messages:[]},
                 noData: false,
                 currentData: [],
                 no_read_len: 0
@@ -67,20 +67,24 @@
             })
         },
         mounted() {
-            $.get('' + this.userInfo.token, (d) => {
-                // if (d && d.data) {
-                //     this.message = d.data;
-                //     this.no_read_len = d.data.hasnot_read_messages.length;
-                //     if (d.data.hasnot_read_messages.length > 0) {
-                //         this.currentData = d.data.hasnot_read_messages;
-                //     } else {
-                //         this.currentData = d.data.has_read_messages;
-                //         this.selectItem = 2;
-                //     }
-                //     this.noData = this.currentData.length === 0;
-                // } else {
-                //     this.noData = true;
-                // }
+            $.get('/api/user/getMesaage?accesstoken=' + this.userInfo.token, (d) => {
+                if (d.replies) {
+                    this.message.hasnot_read_messages = d.replies.filter((item)=>{
+                            return item.is_read == false
+                    });
+                    this.message.has_read_messages = d.replies.filter((item)=>{
+                            return item.is_read == true
+                    });
+                    if (this.message.hasnot_read_messages.length > 0) {
+                        this.currentData = this.message.hasnot_read_messages;
+                    } else {
+                        this.currentData = this.message.has_read_messages;
+                        this.selectItem = 2;
+                    }
+                    this.noData = this.currentData.length === 0;
+                } else {
+                    this.noData = true;
+                }
             });
         },
         methods: {
@@ -102,6 +106,18 @@
             },
             getLastTimeStr(date, friendly) {
                 return utils.getLastTimeStr(date, friendly);
+            },
+            vistied(id){
+                $.post('/api/user/visited', {
+                    accesstoken: this.userInfo.token,
+                    id: id
+                }, (d) => {
+                    if (d) {
+                        console.log("updated")
+                    }
+                });
+
+
             }
         },
         components: {

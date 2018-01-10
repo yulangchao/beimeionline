@@ -326,7 +326,6 @@ exports.reply = function (req, res, next) {
     if (!topic) {
       return res.status(404).send('Not Found');
     }
-
     var user = jwt.decode(req.body.accesstoken);
     var reply = {
       author: {
@@ -334,19 +333,32 @@ exports.reply = function (req, res, next) {
         avatar_url: user.avatar_url
       },
       content: req.body.content,
-      created_at: new Date(),
-      articleId: topic._id,
+      create_at: new Date(),
+      topicId: topic._id,
       articleAuthorId: topic.author_id,
-      read: false
+      is_read: false,
+      is_uped: false,
+      replyTo: req.body.replyTo,
+      type: req.body.content.indexOf("/user/")>-1 ? "at":"reply",
+      topic_title: req.body.title
     }
 
-    topic.replies.push(reply);
+    
+    Reply.create(reply, function(err, reply) {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json(reply);
+      console.log(user.fullName + " replied to Topic " + topic._id);
+    });
+
+
+    topic.num_replies++;
 
     topic.save(function (err) {
       if (err) {
         return next(err);
       }
-      return res.status(200).json(topic);
     });
   });
 };

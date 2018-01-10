@@ -6,9 +6,18 @@
 
             <dt>关于项目</dt>
             <dd>该项目是基于Cnodejs的模板，采用vue.js重写的webapp。</dd>
+
+            <dt>github</dt>
+            <dd>https://github.com/yulangchao</dd>
             
+            <dt>Email</dt>
+            <dd>Richardyych@gmail.com</dd>
+
+            <dt>微信</dt>
+            <dd>Richardyych</dd>
+
             <dt>当前版本</dt>
-            <dd>V2.0</dd>
+            <dd>Vue2.0</dd>
 
         </dl>
     </div>

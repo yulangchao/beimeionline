@@ -25,7 +25,7 @@
                                     {{item.author.loginname}}
                                 </span>
                                 <span class="status">
-                                    <b>{{item.replies.length}}</b>
+                                    <b>{{item.num_replies}}</b>
                                     /{{item.visit_count}}
                                 </span>
                             </p>

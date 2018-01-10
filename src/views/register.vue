@@ -177,7 +177,6 @@ export default {
                 this.loading = false;
                 this.$alert("not done");
                 var error = JSON.parse(res.responseText);
-                console.log(typeof error.message.errmsg == "undefined");
                 this.$alert((typeof error.message.errmsg != "undefined") ? error.message.errmsg : error.message,message);
               }
             });
@@ -192,7 +191,6 @@ export default {
           this.$alert("not done");
           var error = JSON.parse(res.responseText);
            console.log(error);
-          console.log(typeof error.message.errmsg == "undefined");
           this.$alert((typeof error.message.errmsg != "undefined") ? error.message.errmsg : error.message.message);
         }
       });

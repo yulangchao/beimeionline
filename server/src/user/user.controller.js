@@ -4,7 +4,8 @@ var mongoose = require('mongoose'),
   jwt = require('jsonwebtoken'),
   bcrypt = require('bcrypt'),
   User = require('./user.model'),
-  Topic = require('../topic/topic.model');
+  Topic = require('../topic/topic.model'),
+  Reply = require('../reply/reply.model');
 var fs = require('fs');
 var mkdirp = require('mkdirp');
 var thumb = require('node-thumbnail').thumb;
@@ -65,11 +66,93 @@ exports.getInfo = function (req, res, next) {
       if (err) {
         return next(err);
       }
-      return res.status(200).json({ email: user.email, loginname: user.fullName, _id: user._id, avatar_url: user.avatar_url, create_at: user.created, topics: topics });
+
+      Reply.find({
+        'author.loginname': user.fullName
+      }, function (err, replies) {
+        if (err) {
+          return next(err);
+        }
+        return res.status(200).json({ email: user.email, loginname: user.fullName, _id: user._id, avatar_url: user.avatar_url, create_at: user.created, topics: topics, replies: replies });
+      }).limit(10).sort({ create_at: -1 });
+
     }).limit(10).sort({ created_at: -1 });
 
   });
 };
+
+exports.getMessage = function (req, res, next) {
+
+  var user = jwt.decode(req.query.accesstoken);
+  User.findOne({
+    fullName: user.fullName
+  }, function (err, user) {
+
+    if (err) throw err;
+    Reply.find({
+      $or: [
+        { 'articleAuthorId': user._id },
+        { 'replyTo': user.fullName }
+      ]
+    }, function (err, replies) {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json({replies: replies });
+    }).limit(10).sort({ create_at: -1 });
+
+  });
+};
+
+
+exports.visited = function(req, res, next) {
+  Reply.findById(req.body.id, function(err, reply) {
+    if (err) {
+      return next(err);
+    }
+    if (!reply) {
+      return res.status(404).send('Not Found');
+    }
+    reply.is_read = true;
+
+    reply.save(function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json("done");
+    });
+
+
+  });
+};
+
+
+exports.ups = function(req, res, next) {
+  var user = jwt.decode(req.body.accesstoken);
+  Reply.findById(req.body.id, function(err, reply) {
+    if (err) {
+      return next(err);
+    }
+    if (!reply) {
+      return res.status(404).send('Not Found');
+    }
+    reply.ups.push(user._id);
+
+    reply.save(function(err) {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json("done");
+    });
+
+
+  });
+};
+
+
+
+
+
 
 
 
